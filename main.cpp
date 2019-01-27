@@ -7,8 +7,8 @@ const float TURNING_DIAMETER = 17.5;
 const float WHEEL_DIAMETER = 4.125;
 
 const bool RedInside = false;
-const bool BlueInside = false;
-const bool Outside = true;
+const bool BlueInside = true;
+const bool Outside = false;
 const bool Skills = false;
 
 
@@ -33,14 +33,14 @@ void driveFor( float tiles ){
 void turn( float degrees ){
     float turningRatio = TURNING_DIAMETER / WHEEL_DIAMETER; 
     
-    RightMotorFront.startRotateFor(degrees * turningRatio / 2, vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
-    LeftMotorFront.startRotateFor(-degrees * turningRatio / 2, vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
-    RightMotorBack.startRotateFor(degrees * turningRatio / 2, vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
-    LeftMotorBack.rotateFor(-degrees * turningRatio / 2, vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
+    RightMotorFront.startRotateFor(degrees * turningRatio / 2, vex::rotationUnits::deg, 75, vex::velocityUnits::pct);
+    LeftMotorFront.startRotateFor(-degrees * turningRatio / 2, vex::rotationUnits::deg, 75, vex::velocityUnits::pct);
+    RightMotorBack.startRotateFor(degrees * turningRatio / 2, vex::rotationUnits::deg, 75, vex::velocityUnits::pct);
+    LeftMotorBack.rotateFor(-degrees * turningRatio / 2, vex::rotationUnits::deg, 75, vex::velocityUnits::pct);
 }
 
 void shoot( void ){
-    LauncherMotor.rotateFor(1, vex::timeUnits::sec, 100, vex::velocityUnits::pct);
+    LauncherMotor.rotateFor(1.4, vex::timeUnits::sec, 100, vex::velocityUnits::pct);
 }
 
 void driveSlowlyFor( float tiles  ){
@@ -63,11 +63,18 @@ void autonomous( void ) {
     
     if(BlueInside){
         shoot();
-        turn(160.0);
+        RollerMotor.spin(vex::directionType::rev,100,vex::velocityUnits::pct);
+        turn(144.0);
         driveFor(3.2);
         driveSlowlyFor(0.6);
-        RollerMotor.startRotateFor(1500,vex::rotationUnits::deg,100,vex::velocityUnits::pct);
-        driveFor(-2.8);
+        driveFor(-3.0);
+        driveSlowlyFor(-1.0);
+        driveFor(0.25);
+        turn(-144.0);
+        driveFor(5);
+        driveFor(-1.2);
+        driveSlowlyFor(0.6);
+        shoot();
     }
     
     if(Outside){
