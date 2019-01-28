@@ -9,12 +9,13 @@ const float WHEEL_DIAMETER = 4.125;
 const bool RedInside = false;
 const bool BlueInside = true;
 const bool Outside = false;
-const bool Skills = false;
+const bool ProgrammingSkills = false;
+const bool DriverSkills = true;
 
 
 
 void pre_auton( void ) {
-  
+
 }
 
 void driveFor( float tiles ){
@@ -22,17 +23,17 @@ void driveFor( float tiles ){
     float circum =  3.141592653589 * WHEEL_DIAMETER;
     float rotations = length / circum;
     float degrees = 360 * rotations;
-       
+
     RightMotorFront.startRotateFor(degrees, vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
     LeftMotorFront.startRotateFor(degrees, vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
     RightMotorBack.startRotateFor(degrees, vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
     LeftMotorBack.rotateFor(degrees, vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
-    
+
 }
 
 void turn( float degrees ){
-    float turningRatio = TURNING_DIAMETER / WHEEL_DIAMETER; 
-    
+    float turningRatio = TURNING_DIAMETER / WHEEL_DIAMETER;
+
     RightMotorFront.startRotateFor(degrees * turningRatio / 2, vex::rotationUnits::deg, 75, vex::velocityUnits::pct);
     LeftMotorFront.startRotateFor(-degrees * turningRatio / 2, vex::rotationUnits::deg, 75, vex::velocityUnits::pct);
     RightMotorBack.startRotateFor(degrees * turningRatio / 2, vex::rotationUnits::deg, 75, vex::velocityUnits::pct);
@@ -44,23 +45,32 @@ void shoot( void ){
 }
 
 void driveSlowlyFor( float tiles  ){
-    
+
     float length = tiles * TILE_LENGTH;
     float circum =  3.141592653589 * WHEEL_DIAMETER;
     float rotations = length / circum;
     float degrees = 360 * rotations;
-    
+
     RightMotorFront.startRotateFor(degrees, vex::rotationUnits::deg, 40, vex::velocityUnits::pct);
     LeftMotorFront.startRotateFor(degrees, vex::rotationUnits::deg, 40, vex::velocityUnits::pct);
     RightMotorBack.startRotateFor(degrees, vex::rotationUnits::deg, 40, vex::velocityUnits::pct);
-    LeftMotorBack.rotateFor(degrees, vex::rotationUnits::deg, 40, vex::velocityUnits::pct);   
+    LeftMotorBack.rotateFor(degrees, vex::rotationUnits::deg, 40, vex::velocityUnits::pct);
+}
+
+void rumbleTimer(void) {
+    vex::task::sleep(20000);
+    Controller1.rumble("-");
+    vex::task::sleep(20000);
+    Controller1.rumble("--");
+    vex::task::sleep(10000);
+    Controller.rumble("---");
 }
 
 void autonomous( void ) {
-    
+
     //Positive = counter-clockwise
     //Negative = clockwise
-    
+
     if(BlueInside){
         shoot();
         RollerMotor.spin(vex::directionType::rev,100,vex::velocityUnits::pct);
@@ -76,12 +86,12 @@ void autonomous( void ) {
         driveSlowlyFor(0.6);
         shoot();
     }
-    
+
     if(Outside){
         RollerMotor.spin(vex::directionType::rev,100,vex::velocityUnits::pct);
         driveSlowlyFor(3.6);
     }
-    
+
     if(RedInside){
         shoot();
         turn(-160.0);
@@ -90,8 +100,8 @@ void autonomous( void ) {
         driveSlowlyFor(0.6);
         driveFor(-2.8);
     }
-    
-    if(Skills){
+
+    if(ProgrammingSkills){
         shoot();
         driveFor(3.2);
     }
@@ -99,89 +109,85 @@ void autonomous( void ) {
 
 
 void usercontrol( void ) {
-    Controller1.Screen.print("Welcome Aboard Captain");
-    Controller1.Screen.newLine();
-    Controller1.Screen.print("Get ready to rumble!!!");
-    Controller1.Screen.newLine();
 
-    Controller1.Screen.print("FORWARD MODE!");
-    Controller1.Screen.newLine();
-    Controller1.rumble("--..-");
-while (1) {
+    if(DriverSkills) {
+        vex::thread rumbleThread = vex::thread(rumbleTimer);
+    }
 
-    
-    int left = Controller1.Axis3.value();
-    int right = -(Controller1.Axis1.value());
+    while (1) {
 
-    RightMotorFront.spin(vex::directionType::fwd, (left + right), vex::velocityUnits::pct);
-    LeftMotorFront.spin(vex::directionType::fwd, (left - right), vex::velocityUnits::pct);
-    RightMotorBack.spin(vex::directionType::fwd, (left + right), vex::velocityUnits::pct);
-    LeftMotorBack.spin(vex::directionType::fwd, (left - right), vex::velocityUnits::pct);
+        int left = Controller1.Axis3.value();
+        int right = -(Controller1.Axis1.value());
 
-    if(Controller1.ButtonR1.pressing()){
-        LauncherMotor.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+        RightMotorFront.spin(vex::directionType::fwd, (left + right), vex::velocityUnits::pct);
+        LeftMotorFront.spin(vex::directionType::fwd, (left - right), vex::velocityUnits::pct);
+        RightMotorBack.spin(vex::directionType::fwd, (left + right), vex::velocityUnits::pct);
+        LeftMotorBack.spin(vex::directionType::fwd, (left - right), vex::velocityUnits::pct);
+
+        if(Controller1.ButtonR1.pressing()){
+            LauncherMotor.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+        }
+        else{
+            LauncherMotor.stop();
+        }
+
+        if(Controller1.ButtonL1.pressing()){
+            RollerMotor.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
+        }
+        else if(Controller1.ButtonL2.pressing()){
+            RollerMotor.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+        }
+        else{
+            RollerMotor.stop();
+        }
+
+        if(Controller1.ButtonLeft.pressing()){
+            RightMotorFront.spin(vex::directionType::fwd, 7, vex::velocityUnits::pct);
+            LeftMotorFront.spin(vex::directionType::rev, 7, vex::velocityUnits::pct);
+            RightMotorBack.spin(vex::directionType::fwd, 7, vex::velocityUnits::pct);
+            LeftMotorBack.spin(vex::directionType::rev, 7, vex::velocityUnits::pct);
+        }
+        else if(Controller1.ButtonRight.pressing()){
+            RightMotorFront.spin(vex::directionType::rev, 7, vex::velocityUnits::pct);
+            LeftMotorFront.spin(vex::directionType::fwd, 7, vex::velocityUnits::pct);
+            RightMotorBack.spin(vex::directionType::rev, 7, vex::velocityUnits::pct);
+            LeftMotorBack.spin(vex::directionType::fwd, 7, vex::velocityUnits::pct);
+        }
+
+        if(Controller1.ButtonUp.pressing()){
+            RightMotorFront.spin(vex::directionType::fwd, 35, vex::velocityUnits::pct);
+            LeftMotorFront.spin(vex::directionType::fwd, 35, vex::velocityUnits::pct);
+            RightMotorBack.spin(vex::directionType::fwd, 35, vex::velocityUnits::pct);
+            LeftMotorBack.spin(vex::directionType::fwd, 35, vex::velocityUnits::pct);
+        }
+
+        if(Controller1.ButtonX.pressing()){
+            OneBarMotor.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+        }
+        else if(Controller1.ButtonB.pressing()){
+            OneBarMotor.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+        }
+        else if(Controller1.ButtonA.pressing()){
+            OneBarMotor.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
+        }
+        else{
+            OneBarMotor.stop();
+        }
+
+        vex::task::sleep(20);
     }
-    else{
-        LauncherMotor.stop();
-    }
-    
-    if(Controller1.ButtonL1.pressing()){
-        RollerMotor.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
-    }
-    else if(Controller1.ButtonL2.pressing()){
-        RollerMotor.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
-    }
-    else{
-        RollerMotor.stop();
-    }
-    
-    if(Controller1.ButtonLeft.pressing()){
-        RightMotorFront.spin(vex::directionType::fwd, 7, vex::velocityUnits::pct);
-        LeftMotorFront.spin(vex::directionType::rev, 7, vex::velocityUnits::pct);
-        RightMotorBack.spin(vex::directionType::fwd, 7, vex::velocityUnits::pct);
-        LeftMotorBack.spin(vex::directionType::rev, 7, vex::velocityUnits::pct);       
-    }
-    else if(Controller1.ButtonRight.pressing()){
-        RightMotorFront.spin(vex::directionType::rev, 7, vex::velocityUnits::pct);
-        LeftMotorFront.spin(vex::directionType::fwd, 7, vex::velocityUnits::pct);
-        RightMotorBack.spin(vex::directionType::rev, 7, vex::velocityUnits::pct);
-        LeftMotorBack.spin(vex::directionType::fwd, 7, vex::velocityUnits::pct);       
-    }
-    
-    if(Controller1.ButtonUp.pressing()){
-        RightMotorFront.spin(vex::directionType::fwd, 35, vex::velocityUnits::pct);
-        LeftMotorFront.spin(vex::directionType::fwd, 35, vex::velocityUnits::pct);
-        RightMotorBack.spin(vex::directionType::fwd, 35, vex::velocityUnits::pct);
-        LeftMotorBack.spin(vex::directionType::fwd, 35, vex::velocityUnits::pct);       
-    }
-    
-    if(Controller1.ButtonX.pressing()){
-        OneBarMotor.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
-    }
-    else if(Controller1.ButtonB.pressing()){
-        OneBarMotor.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
-    }
-    else if(Controller1.ButtonA.pressing()){
-        OneBarMotor.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
-    }
-    else{
-        OneBarMotor.stop();
-    }
-      
-    vex::task::sleep(20);  
-  }
 }
 
 
 int main() {
-    
+
     pre_auton();
 
     Competition.autonomous( autonomous );
     Competition.drivercontrol( usercontrol );
-                       
+
     while(1) {
       vex::task::sleep(100);
-    }    
-       
+    }
+
 }
