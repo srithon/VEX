@@ -10,7 +10,7 @@ const bool RedInside = false;
 const bool BlueInside = true;
 const bool Outside = false;
 const bool ProgrammingSkills = false;
-const bool DriverSkills = true;
+const bool DriverSkills = false;
 
 
 
@@ -34,10 +34,10 @@ void driveFor( float tiles ){
 void turn( float degrees ){
     float turningRatio = TURNING_DIAMETER / WHEEL_DIAMETER;
 
-    RightMotorFront.startRotateFor(degrees * turningRatio / 2, vex::rotationUnits::deg, 75, vex::velocityUnits::pct);
-    LeftMotorFront.startRotateFor(-degrees * turningRatio / 2, vex::rotationUnits::deg, 75, vex::velocityUnits::pct);
-    RightMotorBack.startRotateFor(degrees * turningRatio / 2, vex::rotationUnits::deg, 75, vex::velocityUnits::pct);
-    LeftMotorBack.rotateFor(-degrees * turningRatio / 2, vex::rotationUnits::deg, 75, vex::velocityUnits::pct);
+    RightMotorFront.startRotateFor(degrees * turningRatio / 2, vex::rotationUnits::deg, 60, vex::velocityUnits::pct);
+    LeftMotorFront.startRotateFor(-degrees * turningRatio / 2, vex::rotationUnits::deg, 60, vex::velocityUnits::pct);
+    RightMotorBack.startRotateFor(degrees * turningRatio / 2, vex::rotationUnits::deg, 60, vex::velocityUnits::pct);
+    LeftMotorBack.rotateFor(-degrees * turningRatio / 2, vex::rotationUnits::deg, 60, vex::velocityUnits::pct);
 }
 
 void shoot( void ){
@@ -57,13 +57,26 @@ void driveSlowlyFor( float tiles  ){
     LeftMotorBack.rotateFor(degrees, vex::rotationUnits::deg, 40, vex::velocityUnits::pct);
 }
 
+void driveMediumFor( float tiles  ){
+
+    float length = tiles * TILE_LENGTH;
+    float circum =  3.141592653589 * WHEEL_DIAMETER;
+    float rotations = length / circum;
+    float degrees = 360 * rotations;
+
+    RightMotorFront.startRotateFor(degrees, vex::rotationUnits::deg, 60, vex::velocityUnits::pct);
+    LeftMotorFront.startRotateFor(degrees, vex::rotationUnits::deg, 60, vex::velocityUnits::pct);
+    RightMotorBack.startRotateFor(degrees, vex::rotationUnits::deg, 60, vex::velocityUnits::pct);
+    LeftMotorBack.rotateFor(degrees, vex::rotationUnits::deg, 60, vex::velocityUnits::pct);
+}
+
 void rumbleTimer(void) {
     vex::task::sleep(20000);
     Controller1.rumble("-");
     vex::task::sleep(20000);
     Controller1.rumble("--");
     vex::task::sleep(10000);
-    Controller.rumble("---");
+    Controller1.rumble("---");
 }
 
 void autonomous( void ) {
@@ -74,17 +87,38 @@ void autonomous( void ) {
     if(BlueInside){
         shoot();
         RollerMotor.spin(vex::directionType::rev,100,vex::velocityUnits::pct);
-        turn(144.0);
-        driveFor(3.2);
+        turn(142.0);
+        vex::task::sleep(300);
+        driveFor(3.0);
         driveSlowlyFor(0.6);
-        driveFor(-3.0);
-        driveSlowlyFor(-1.0);
-        driveFor(0.25);
-        turn(-144.0);
-        driveFor(5);
-        driveFor(-1.2);
-        driveSlowlyFor(0.6);
+        driveFor(-4.5);
+        driveFor(0.48);
+        vex::task::sleep(300);
+        turn(-146.0);
+        vex::task::sleep(300);
+        
+        
+        driveFor(2.55);
         shoot();
+        vex::task::sleep(300);
+        RollerMotor.stop();
+        driveFor(-4.23);
+        vex::task::sleep(300);
+        turn(-152.0);
+        driveFor(-5.0);
+        
+        
+        /*driveSlowlyFor(0.5);
+        turn(-17.5);
+        vex::task::sleep(300);
+        driveFor(2.7);
+        vex::task::sleep(300);
+        RollerMotor.stop();
+        driveMediumFor(1.6);
+        driveSlowlyFor(-2.0);
+        turn(22.0);
+        shoot();
+        turn(-22.0);*/
     }
 
     if(Outside){
