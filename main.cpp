@@ -85,39 +85,39 @@ void autonomous( void ) {
     //Negative = clockwise
 
     if(BlueInside){
-        shoot();
-        RollerMotor.spin(vex::directionType::rev,100,vex::velocityUnits::pct);
-        turn(142.0);
-        vex::task::sleep(300);
-        driveFor(3.0);
-        driveSlowlyFor(0.6);
-        driveFor(-4.5);
-        driveFor(0.48);
-        vex::task::sleep(300);
-        turn(-146.0);
-        vex::task::sleep(300);
+        shoot(); //shoot high flag
+        RollerMotor.spin(vex::directionType::rev,100,vex::velocityUnits::pct); //turn on roller
+        turn(142.0); //turn left to face cap w ball
+        vex::task::sleep(300); //stop for 0.3 seconds to avoid drifting
+        driveFor(3.0); //drive for 3 tiles to get ball
+        driveSlowlyFor(0.6); //drive slowly to approach ball
+        driveFor(-4.5); //drive back and hit wall to align bot
+        driveFor(0.48); //drive slowly forward to avoid hitting wall when turning
+        vex::task::sleep(300); //sleep for 0.3 seconds
+        turn(-146.0); //turn right to face flags
+        vex::task::sleep(300); //sleep for 0.3 seconds 
         
+        //8 point auton with platform
+        driveFor(2.55); //drive forwards to hit medium flag
+        shoot(); //shoot
+        vex::task::sleep(300); //sleep for 0.3 seconds
+        RollerMotor.stop(); //stop roller motor
+        driveFor(-4.23); //drive back to reach platform
+        vex::task::sleep(300); //sleep for 0.3 seconds
+        turn(-152.0); //turn so that back is facing platform
+        driveFor(-5.0); //drive into platform
         
-        driveFor(2.55);
-        shoot();
-        vex::task::sleep(300);
-        RollerMotor.stop();
-        driveFor(-4.23);
-        vex::task::sleep(300);
-        turn(-152.0);
-        driveFor(-5.0);
-        
-        
-        /*driveSlowlyFor(0.5);
-        turn(-17.5);
-        vex::task::sleep(300);
-        driveFor(2.7);
-        vex::task::sleep(300);
-        RollerMotor.stop();
-        driveMediumFor(1.6);
-        driveSlowlyFor(-2.0);
-        turn(22.0);
-        shoot();
+        //6 point auton without platform
+        /*driveSlowlyFor(0.5); //drive slowly initially
+        turn(-17.5); //turn to face low flag
+        vex::task::sleep(300); //sleep for 0.3 seconds
+        driveFor(2.7); //drive forwards 
+        vex::task::sleep(300); //sleep for 0.3 seconds
+        RollerMotor.stop(); //stops roller
+        driveMediumFor(1.6); //drive slowly into low flag and align w wall
+        driveSlowlyFor(-2.0); //drive backwards for medium flag
+        turn(22.0); //turn to aim for medium flag
+        shoot(); //shoot
         turn(-22.0);*/
     }
 
@@ -127,12 +127,40 @@ void autonomous( void ) {
     }
 
     if(RedInside){
-        shoot();
-        turn(-160.0);
-        driveFor(3.2);
-        RollerMotor.startRotateFor(-1200,vex::rotationUnits::deg,100,vex::velocityUnits::pct);
-        driveSlowlyFor(0.6);
-        driveFor(-2.8);
+        shoot(); //shoot high flag
+        RollerMotor.spin(vex::directionType::rev,100,vex::velocityUnits::pct); //turn on roller
+        turn(-142.0); //turn left to face cap w ball
+        vex::task::sleep(300); //stop for 0.3 seconds to avoid drifting
+        driveFor(3.0); //drive for 3 tiles to get ball
+        driveSlowlyFor(0.6); //drive slowly to approach ball
+        driveFor(-4.5); //drive back and hit wall to align bot
+        driveFor(0.48); //drive slowly forward to avoid hitting wall when turning
+        vex::task::sleep(300); //sleep for 0.3 seconds
+        turn(146.0); //turn right to face flags
+        vex::task::sleep(300); //sleep for 0.3 seconds 
+        
+        //8 point auton with platform
+        driveFor(2.55); //drive forwards to hit medium flag
+        shoot(); //shoot
+        vex::task::sleep(300); //sleep for 0.3 seconds
+        RollerMotor.stop(); //stop roller motor
+        driveFor(-4.23); //drive back to reach platform
+        vex::task::sleep(300); //sleep for 0.3 seconds
+        turn(152.0); //turn so that back is facing platform
+        driveFor(-5.0); //drive into platform
+        
+        //6 point auton without platform
+        /*driveSlowlyFor(0.5); //drive slowly initially
+        turn(17.5); //turn to face low flag
+        vex::task::sleep(300); //sleep for 0.3 seconds
+        driveFor(2.7); //drive forwards 
+        vex::task::sleep(300); //sleep for 0.3 seconds
+        RollerMotor.stop(); //stops roller
+        driveMediumFor(1.6); //drive slowly into low flag and align w wall
+        driveSlowlyFor(-2.0); //drive backwards for medium flag
+        turn(-22.0); //turn to aim for medium flag
+        shoot(); //shoot
+        turn(22.0);*/      
     }
 
     if(ProgrammingSkills){
