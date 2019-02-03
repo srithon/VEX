@@ -10,7 +10,7 @@ const bool RedInside = false;
 const bool BlueInside = false;
 const bool Outside = false;
 const bool ProgrammingSkills = false;
-const bool DriverSkills = true;
+const bool DriverSkills = false;
 
 
 
@@ -39,7 +39,7 @@ void turn( float degrees ){
     RightMotorFront.startRotateFor(degrees * turningRatio / 2, vex::rotationUnits::deg, turnSpeed, vex::velocityUnits::pct);
     LeftMotorFront.startRotateFor(-degrees * turningRatio / 2, vex::rotationUnits::deg, turnSpeed, vex::velocityUnits::pct);
     RightMotorBack.startRotateFor(degrees * turningRatio / 2, vex::rotationUnits::deg, turnSpeed, vex::velocityUnits::pct);
-    LeftMotorBack.rotateFor(-degrees * turningRatio / 2, vex::rotationUnits::deg, 60, turnSpeed::velocityUnits::pct);
+    LeftMotorBack.rotateFor(-degrees * turningRatio / 2, vex::rotationUnits::deg, turnSpeed, vex::velocityUnits::pct);
 }
 
 void shoot( void ){
