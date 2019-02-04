@@ -1,12 +1,12 @@
 /**************************************************
- *
- *
- * Team: 750E
- * Game: Turning Point
- * Main File
- *
- *
- ***************************************************/
+*
+*
+* Team: 750E
+* Game: Turning Point 
+* Main File
+*
+*
+***************************************************/
 
 
 #include "robot-config.h"
@@ -19,7 +19,7 @@ const float WHEEL_DIAMETER = 4.125;
 
 
 /**************************************************/
-/*Auton Constants*/
+/*Auton Constants*/ 
 
 const bool RedInside = false;
 const bool BlueInside = false;
@@ -30,18 +30,18 @@ const bool DriverSkills = false;
 
 
 void pre_auton( void ) {
-    
+
 }
 
 
 /**************************************************
- *
- * Auton methods
- * driveFor();
- * turn();
- * shoot();
- *
- **************************************************/
+*
+* Auton methods
+* driveFor();
+* turn();
+* shoot();
+*
+**************************************************/
 
 
 void driveFor( float tiles , int speed){
@@ -50,7 +50,7 @@ void driveFor( float tiles , int speed){
     float circum =  3.141592653589 * WHEEL_DIAMETER;
     float rotations = length / circum;
     float degrees = 360 * rotations;
-    
+
     RightMotorFront.startRotateFor(degrees, rotationUnits::deg, speed, velocityUnits::pct);
     LeftMotorFront.startRotateFor(degrees, rotationUnits::deg, speed, velocityUnits::pct);
     RightMotorBack.startRotateFor(degrees, rotationUnits::deg, speed, velocityUnits::pct);
@@ -62,7 +62,7 @@ void turn( float degrees ){
     const float TURNING_DIAMETER = 17.5;
     float turningRatio = TURNING_DIAMETER / WHEEL_DIAMETER;
     int turnSpeed = 60;
-    
+
     RightMotorFront.startRotateFor(degrees * turningRatio / 2, rotationUnits::deg, turnSpeed, velocityUnits::pct);
     LeftMotorFront.startRotateFor(-degrees * turningRatio / 2, rotationUnits::deg, turnSpeed, velocityUnits::pct);
     RightMotorBack.startRotateFor(degrees * turningRatio / 2, rotationUnits::deg, turnSpeed, velocityUnits::pct);
@@ -90,10 +90,10 @@ void rumbleTimer(void) {
 /**************************************************/
 
 void autonomous( void ) {
-    
+
     //Positive = counter-clockwise
     //Negative = clockwise
-    
+
     if(BlueInside){
         shoot(); //shoot high flag
         RollerMotor.spin(directionType::fwd,100,velocityUnits::pct); //turn on roller
@@ -105,23 +105,23 @@ void autonomous( void ) {
         driveFor(0.48, 100); //drive slowly forward to avoid hitting wall when turning
         task::sleep(300); //sleep for 0.3 seconds
         turn(-165.0); //turn right to face flags
-        task::sleep(300); //sleep for 0.3 seconds
+        task::sleep(300); //sleep for 0.3 seconds 
         
         //8 point auton with platform
         /*driveFor(2.55, 100); //drive forwards to hit medium flag
-         shoot(); //shoot
-         task::sleep(300); //sleep for 0.3 seconds
-         RollerMotor.stop(); //stop roller motor
-         driveFor(-4.23, 100); //drive back to reach platform
-         task::sleep(300); //sleep for 0.3 seconds
-         turn(-152.0); //turn so that back is facing platform
-         driveFor(-5.0, 100); //drive into platform*/
+        shoot(); //shoot
+        task::sleep(300); //sleep for 0.3 seconds
+        RollerMotor.stop(); //stop roller motor
+        driveFor(-4.23, 100); //drive back to reach platform
+        task::sleep(300); //sleep for 0.3 seconds
+        turn(-152.0); //turn so that back is facing platform
+        driveFor(-5.0, 100); //drive into platform*/
         
         //6 point auton without platform
         //driveSlowlyFor(0.5); //drive slowly initially
         //turn(-20.0); //turn to face low flag
         task::sleep(300); //sleep for 0.3 seconds
-        driveFor(2.4, 100); //drive forwards
+        driveFor(2.4, 100); //drive forwards 
         task::sleep(300); //sleep for 0.3 seconds
         RollerMotor.stop(); //stops roller
         turn(20.0);
@@ -130,12 +130,12 @@ void autonomous( void ) {
         driveFor(1.6, 60); //drive slowly into low flag and align w wall
         driveFor(2.0, 40); //drive backwards for medium flag
     }
-    
+
     if(Outside){
         RollerMotor.spin(directionType::rev,100,velocityUnits::pct);
         driveFor(3.6, 40);
     }
-    
+
     if(RedInside){
         shoot(); //shoot high flag
         RollerMotor.spin(directionType::fwd,100,velocityUnits::pct); //turn on roller
@@ -147,33 +147,33 @@ void autonomous( void ) {
         driveFor(0.41, 100); //drive slowly forward to avoid hitting wall when turning
         task::sleep(300); //sleep for 0.3 seconds
         turn(140.0); //turn right to face flags
-        task::sleep(300); //sleep for 0.3 seconds
+        task::sleep(300); //sleep for 0.3 seconds 
         
         //8 point auton with platform
         /*driveFor(2.55, 100); //drive forwards to hit medium flag
-         shoot(); //shoot
-         task::sleep(300); //sleep for 0.3 seconds
-         RollerMotor.stop(); //stop roller motor
-         driveFor(-4.36, 100); //drive back to reach platform
-         task::sleep(300); //sleep for 0.3 seconds
-         turn(135.0); //turn so that back is facing platform
-         task::sleep(300);
-         driveFor(-5.0, 100); //drive into platform*/
+        shoot(); //shoot
+        task::sleep(300); //sleep for 0.3 seconds
+        RollerMotor.stop(); //stop roller motor
+        driveFor(-4.36, 100); //drive back to reach platform
+        task::sleep(300); //sleep for 0.3 seconds
+        turn(135.0); //turn so that back is facing platform
+        task::sleep(300);
+        driveFor(-5.0, 100); //drive into platform*/
         
         //6 point auton without platform
         driveFor(0.5, 40); //drive slowly initially
         turn(22.0); //turn to face low flag
         task::sleep(300); //sleep for 0.3 seconds
-        driveFor(2.7, 100); //drive forwards
+        driveFor(2.7, 100); //drive forwards 
         task::sleep(300); //sleep for 0.3 seconds
         RollerMotor.stop(); //stops roller
         driveFor(1.6, 60); //drive slowly into low flag and align w wall
         driveFor(-2.0, 40); //drive backwards for medium flag
         turn(-27.0); //turn to aim for medium flag
         shoot(); //shoot
-        turn(22.0);
+        turn(22.0);      
     }
-    
+
     if(ProgrammingSkills){
         shoot();
         driveFor(3.2, 100);
@@ -182,28 +182,28 @@ void autonomous( void ) {
 
 
 void usercontrol( void ) {
-    
+
     if(DriverSkills) {
         thread rumbleThread = thread(rumbleTimer);
     }
-    
+
     while (1) {
-        
+
         int left = Controller1.Axis3.value();
         int right = -(Controller1.Axis1.value());
-        
+
         RightMotorFront.spin(directionType::fwd, (left + right), velocityUnits::pct);
         LeftMotorFront.spin(directionType::fwd, (left - right), velocityUnits::pct);
         RightMotorBack.spin(directionType::fwd, (left + right), velocityUnits::pct);
         LeftMotorBack.spin(directionType::fwd, (left - right), velocityUnits::pct);
-        
+
         if(Controller1.ButtonR1.pressing()){
             LauncherMotor.spin(directionType::fwd, 100, velocityUnits::pct);
         }
         else{
             LauncherMotor.stop();
         }
-        
+
         if(Controller1.ButtonL1.pressing()){
             RollerMotor.spin(directionType::rev, 100, velocityUnits::pct);
         }
@@ -213,7 +213,7 @@ void usercontrol( void ) {
         else{
             RollerMotor.stop();
         }
-        
+
         if(Controller1.ButtonLeft.pressing()){
             RightMotorFront.spin(directionType::fwd, 7, velocityUnits::pct);
             LeftMotorFront.spin(directionType::rev, 7, velocityUnits::pct);
@@ -226,29 +226,29 @@ void usercontrol( void ) {
             RightMotorBack.spin(directionType::rev, 7, velocityUnits::pct);
             LeftMotorBack.spin(directionType::fwd, 7, velocityUnits::pct);
         }
-        
+
         if(Controller1.ButtonUp.pressing()){
             RightMotorFront.spin(directionType::fwd, 35, velocityUnits::pct);
             LeftMotorFront.spin(directionType::fwd, 35, velocityUnits::pct);
             RightMotorBack.spin(directionType::fwd, 35, velocityUnits::pct);
             LeftMotorBack.spin(directionType::fwd, 35, velocityUnits::pct);
         }
-        
-        
+
+
         task::sleep(20);
     }
 }
 
 
 int main() {
-    
+
     pre_auton();
-    
+
     comp.autonomous( autonomous );
     comp.drivercontrol( usercontrol );
-    
+
     while(1) {
-        task::sleep(100);
+      task::sleep(100);
     }
-    
+
 }
