@@ -1,9 +1,45 @@
-vex::brain Brain;
-vex::controller Controller1;
-vex::motor RightMotorFront = vex::motor(vex::PORT17, true);
-vex::motor RightMotorBack = vex::motor(vex::PORT10, true);
-vex::motor LeftMotorFront = vex::motor(vex::PORT19, false);
-vex::motor LeftMotorBack = vex::motor(vex::PORT18, false);
-vex::motor RollerMotor = vex::motor(vex::PORT20, true);
-vex::motor LauncherMotor = vex::motor(vex::PORT2, true);
-vex::motor OneBarMotor = vex::motor(vex::PORT16, true);
+/**************************************************
+ *
+ *
+ * Team: 750E
+ * Game: Turning Point
+ * Header File
+ *
+ *
+ ***************************************************/
+
+//uses namespace for cleaner code;
+using namespace vex;
+
+/**************************************************/
+/*Motor Port Declaration Panel*/
+
+const int FRONT_RIGHT_PORT = PORT17;
+const int BACK_RIGHT_PORT = PORT10;
+const int FRONT_LEFT_PORT = PORT19;
+const int BACK_LEFT_PORT = PORT8;
+
+const int ROLLER_PORT = PORT20;
+
+const int LAUNCHER_PORT = PORT2;
+
+/***************************************************/
+
+/**************************************************/
+/*Initializing Panel*/
+
+brain Brain = brain();
+
+controller Controller1 = controller();
+
+competition comp = competition();
+
+motor RightMotorFront = motor(FRONT_RIGHT_PORT, true);
+motor RightMotorBack = motor(BACK_RIGHT_PORT, true);
+motor LeftMotorFront = motor(FRONT_LEFT_PORT, false);
+motor LeftMotorBack = motor(BACK_LEFT_PORT, false);
+
+motor RollerMotor = motor(ROLLER_PORT, false);
+
+motor LauncherMotor = motor(LAUNCHER_PORT, true);
+/**************************************************/
