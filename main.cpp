@@ -182,6 +182,8 @@ void autonomous( void ) {
 
 
 void usercontrol( void ) {
+    
+    double driveSpeedMultiplier = 1.00;
 
     if(DriverSkills) {
         thread rumbleThread = thread(rumbleTimer);
@@ -192,10 +194,10 @@ void usercontrol( void ) {
         int left = Controller1.Axis3.value();
         int right = -(Controller1.Axis1.value());
 
-        RightMotorFront.spin(directionType::fwd, (left + right), velocityUnits::pct);
-        LeftMotorFront.spin(directionType::fwd, (left - right), velocityUnits::pct);
-        RightMotorBack.spin(directionType::fwd, (left + right), velocityUnits::pct);
-        LeftMotorBack.spin(directionType::fwd, (left - right), velocityUnits::pct);
+        RightMotorFront.spin(directionType::fwd, (left + right) * driveSpeedMultiplier, velocityUnits::pct);
+        LeftMotorFront.spin(directionType::fwd, (left - right) * driveSpeedMultiplier, velocityUnits::pct);
+        RightMotorBack.spin(directionType::fwd, (left + right) * driveSpeedMultiplier, velocityUnits::pct);
+        LeftMotorBack.spin(directionType::fwd, (left - right) * driveSpeedMultiplier, velocityUnits::pct);
 
         if(Controller1.ButtonR1.pressing()){
             LauncherMotor.spin(directionType::fwd, 100, velocityUnits::pct);
@@ -203,6 +205,13 @@ void usercontrol( void ) {
         else{
             LauncherMotor.stop();
         }
+        
+        if (Controller1.ButtonR2.pressing()){
+            driveSpeedMultiplier = 0.20;
+        } else {
+            driveSpeedMultiplier = 1.00;
+        }
+        
 
         if(Controller1.ButtonL1.pressing()){
             RollerMotor.spin(directionType::rev, 100, velocityUnits::pct);
