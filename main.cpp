@@ -28,9 +28,123 @@ const bool ProgrammingSkills = false;
 const bool DriverSkills = false;
 /**************************************************/
 
+double driveSpeedMultiplier = 1.00;
 
-void pre_auton( void ) {
+int getNumDirectionButtonsPressed()
+{
+	int n = 0;
+	
+	if (Controller1.ButtonLeft.pressing())
+		n++;
+	if (Controller1.ButtonRight.pressing())
+		n++;
+	if (Controller1.ButtonUp.pressing())
+		n++;
+/*	if (Controller1.ButtonDown.pressing())
+    	n++;	*/
+		
+	return n;
+}
 
+bool checkOnlyDirectionButtonPressed()
+{ //returns true if only one direction button is pressed
+	return (getNumDirectionButtonsPressed() == 1);
+}
+
+// sets controller binds for user control
+void setUserControlBinds(void)
+{
+	/* RIGHT BUMERS */
+	Controller1.ButtonR1.pressed([] ()
+	{ // these are called anonymous functions
+		LauncherMotor.spin(directionType::fwd, 100, velocityUnits::pct);
+	});
+	Controller1.ButtonR1.released([] ()
+	{
+		LauncherMotor.stop();
+	});
+	
+	Controller1.ButtonR2.pressed([] ()
+	{
+		driveSpeedMultiplier = 0.20;
+	});
+	Controller1.ButtonR2.released([] ()
+	{
+		driveSpeedMultiplier = 1.00;
+	});
+	
+	/* LEFT BUMPERS	*/
+	Controller1.ButtonL1.pressed([] ()
+	{
+		if (!Controller1.ButtonL2.pressing())
+		{ //if ButtonL2 is pressed, don't do anything
+			RollerMotor.spin(directionType::rev, 100, velocityUnits::pct);
+		}
+	});
+	Controller1.ButtonL1.released([] ()
+	{
+		if (!Controller1.ButtonL2.pressing())
+		{ //if ButtonL2 is pressed, don't do anything
+			RollerMotor.stop();
+		}
+	});
+	
+	Controller1.ButtonL2.pressed([] ()
+	{
+		if (!Controller1.ButtonL1.pressing())
+		{ //if ButtonL1 is pressed, don't do anything
+			RollerMotor.spin(directionType::fwd, 100, velocityUnits::pct);
+		}
+	});
+	Controller1.ButtonL2.released([] ()
+	{
+		if (!Controller1.ButtonL1.pressing())
+		{ //if ButtonL1 is pressed, don't do anything
+			RollerMotor.stop();
+		}
+	});
+	
+	/*	DIRECTION BUTTONS	*/
+	Controller1.ButtonLeft.pressed([] ()
+	{
+		/*
+		 * ONLY RUNS THE CODE IF NONE OF THE OTHER
+		 * DIRECTION BUTTONS ARE PRESSED
+		 */
+		 
+		if (checkOnlyDirectionButtonPressed())
+		{
+			RightMotorFront.spin(directionType::fwd, 7, velocityUnits::pct);
+            LeftMotorFront.spin(directionType::rev, 7, velocityUnits::pct);
+            RightMotorBack.spin(directionType::fwd, 7, velocityUnits::pct);
+            LeftMotorBack.spin(directionType::rev, 7, velocityUnits::pct);
+		}
+	});
+	Controller1.ButtonRight.pressed([] ()
+	{
+		if (checkOnlyDirectionButtonPressed())
+		{
+			RightMotorFront.spin(directionType::rev, 7, velocityUnits::pct);
+            LeftMotorFront.spin(directionType::fwd, 7, velocityUnits::pct);
+            RightMotorBack.spin(directionType::rev, 7, velocityUnits::pct);
+            LeftMotorBack.spin(directionType::fwd, 7, velocityUnits::pct);
+		}
+	});
+	Controller1.ButtonUp.pressed([] ()
+	{
+		if (checkOnlyDirectionButtonPressed())
+		{
+			RightMotorFront.spin(directionType::fwd, 35, velocityUnits::pct);
+            LeftMotorFront.spin(directionType::fwd, 35, velocityUnits::pct);
+            RightMotorBack.spin(directionType::fwd, 35, velocityUnits::pct);
+            LeftMotorBack.spin(directionType::fwd, 35, velocityUnits::pct);
+		}
+	});
+}
+
+void pre_auton( void )
+{	
+	
 }
 
 
@@ -182,15 +296,13 @@ void autonomous(void) {
 
 
 void usercontrol(void) {
-
-    double driveSpeedMultiplier = 1.00;
-
     if(DriverSkills) {
         thread rumbleThread = thread(rumbleTimer);
     }
+	
+	setUserControlBinds();
 
     while (1) {
-
         int left = Controller1.Axis3.value();
         int right = -(Controller1.Axis1.value());
 
@@ -199,65 +311,19 @@ void usercontrol(void) {
         RightMotorBack.spin(directionType::fwd, (left + right) * driveSpeedMultiplier, velocityUnits::pct);
         LeftMotorBack.spin(directionType::fwd, (left - right) * driveSpeedMultiplier, velocityUnits::pct);
 
-        if(Controller1.ButtonR1.pressing()){
-            LauncherMotor.spin(directionType::fwd, 100, velocityUnits::pct);
-        }
-        else{
-            LauncherMotor.stop();
-        }
-
-        if (Controller1.ButtonR2.pressing()){
-            driveSpeedMultiplier = 0.20;
-        } else {
-            driveSpeedMultiplier = 1.00;
-        }
-
-
-        if(Controller1.ButtonL1.pressing()){
-            RollerMotor.spin(directionType::rev, 100, velocityUnits::pct);
-        }
-        else if(Controller1.ButtonL2.pressing()){
-            RollerMotor.spin(directionType::fwd, 100, velocityUnits::pct);
-        }
-        else{
-            RollerMotor.stop();
-        }
-
-        if(Controller1.ButtonLeft.pressing()){
-            RightMotorFront.spin(directionType::fwd, 7, velocityUnits::pct);
-            LeftMotorFront.spin(directionType::rev, 7, velocityUnits::pct);
-            RightMotorBack.spin(directionType::fwd, 7, velocityUnits::pct);
-            LeftMotorBack.spin(directionType::rev, 7, velocityUnits::pct);
-        }
-        else if(Controller1.ButtonRight.pressing()){
-            RightMotorFront.spin(directionType::rev, 7, velocityUnits::pct);
-            LeftMotorFront.spin(directionType::fwd, 7, velocityUnits::pct);
-            RightMotorBack.spin(directionType::rev, 7, velocityUnits::pct);
-            LeftMotorBack.spin(directionType::fwd, 7, velocityUnits::pct);
-        }
-
-        if(Controller1.ButtonUp.pressing()){
-            RightMotorFront.spin(directionType::fwd, 35, velocityUnits::pct);
-            LeftMotorFront.spin(directionType::fwd, 35, velocityUnits::pct);
-            RightMotorBack.spin(directionType::fwd, 35, velocityUnits::pct);
-            LeftMotorBack.spin(directionType::fwd, 35, velocityUnits::pct);
-        }
-
-
         task::sleep(20);
     }
 }
 
 
-int main() {
-
+int main()
+{
     pre_auton();
 
     comp.autonomous(autonomous);
     comp.drivercontrol(usercontrol);
 
     while(1) {
-      task::sleep(100);
+		task::sleep(100);
     }
-
 }
