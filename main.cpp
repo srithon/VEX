@@ -2,7 +2,7 @@
 *
 *
 * Team: 750E
-* Game: Turning Point 
+* Game: Turning Point
 * Main File
 *
 *
@@ -19,7 +19,7 @@ const float WHEEL_DIAMETER = 4.125;
 
 
 /**************************************************/
-/*Auton Constants*/ 
+/*Auton Constants*/
 
 const bool RedInside = false;
 const bool BlueInside = true;
@@ -105,8 +105,8 @@ void autonomous( void ) {
         driveFor(0.48, 100); //drive slowly forward to avoid hitting wall when turning
         task::sleep(300); //sleep for 0.3 seconds
         turn(-165.0); //turn right to face flags
-        task::sleep(300); //sleep for 0.3 seconds 
-        
+        task::sleep(300); //sleep for 0.3 seconds
+
         //8 point auton with platform
         /*driveFor(2.55, 100); //drive forwards to hit medium flag
         shoot(); //shoot
@@ -116,18 +116,18 @@ void autonomous( void ) {
         task::sleep(300); //sleep for 0.3 seconds
         turn(-152.0); //turn so that back is facing platform
         driveFor(-5.0, 100); //drive into platform*/
-        
-        //6 point auton without platform
+
+        //9 point auton with low flag and platform
         //driveSlowlyFor(0.5); //drive slowly initially
         //turn(-20.0); //turn to face low flag
         task::sleep(300); //sleep for 0.3 seconds
-        driveFor(2.4, 100); //drive forwards 
+        driveFor(2.4, 100); //drive forwards
         task::sleep(300); //sleep for 0.3 seconds
         RollerMotor.stop(); //stops roller
         shoot(); //shoot
         turn(-20.0);
         driveFor(1.6, 60); //drive slowly into low flag and align w wall
-        driveFor(-5.4, 60); //drive backwards for medium flag
+        driveFor(-5.4, 60); //drive backwards for platform
         turn(-153.0); //turn so that back is facing platform
         driveFor(-6.0, 100); //drive into platform
     }
@@ -148,8 +148,8 @@ void autonomous( void ) {
         driveFor(0.41, 100); //drive slowly forward to avoid hitting wall when turning
         task::sleep(300); //sleep for 0.3 seconds
         turn(140.0); //turn right to face flags
-        task::sleep(300); //sleep for 0.3 seconds 
-        
+        task::sleep(300); //sleep for 0.3 seconds
+
         //8 point auton with platform
         /*driveFor(2.55, 100); //drive forwards to hit medium flag
         shoot(); //shoot
@@ -160,18 +160,18 @@ void autonomous( void ) {
         turn(135.0); //turn so that back is facing platform
         task::sleep(300);
         driveFor(-5.0, 100); //drive into platform*/
-        
+
         //6 point auton without platform
         driveFor(0.5, 40); //drive slowly initially
         turn(22.0); //turn to face low flag
         task::sleep(300); //sleep for 0.3 seconds
-        driveFor(2.7, 100); //drive forwards 
+        driveFor(2.7, 100); //drive forwards
         task::sleep(300); //sleep for 0.3 seconds
         RollerMotor.stop(); //stops roller
         driveFor(1.6, 60); //drive slowly into low flag and align w wall
         driveFor(-2.0, 40); //drive backwards for medium flag
         shoot(); //shoot
-        turn(22.0);      
+        turn(22.0);
     }
 
     if(ProgrammingSkills){
@@ -182,7 +182,7 @@ void autonomous( void ) {
 
 
 void usercontrol( void ) {
-    
+
     double driveSpeedMultiplier = 1.00;
 
     if(DriverSkills) {
@@ -205,13 +205,13 @@ void usercontrol( void ) {
         else{
             LauncherMotor.stop();
         }
-        
+
         if (Controller1.ButtonR2.pressing()){
             driveSpeedMultiplier = 0.20;
         } else {
             driveSpeedMultiplier = 1.00;
         }
-        
+
 
         if(Controller1.ButtonL1.pressing()){
             RollerMotor.spin(directionType::rev, 100, velocityUnits::pct);
