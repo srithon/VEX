@@ -47,7 +47,7 @@ void pre_auton( void ) {
  **************************************************/
 
 
-void driveFor( float tiles , int speed){
+void driveFor( float tiles , int speed ){
     const float TILE_LENGTH = 12.5;
     float length = tiles * TILE_LENGTH;
     float circum =  3.141592653589 * WHEEL_DIAMETER;
@@ -82,32 +82,56 @@ void shoot( void ){
 int selectAuton() {
     Brain.Screen.clearScreen();
     
-    Brain.Screen.drawRectangle(10, 10, 225, 121, color::red);
-    Brain.Screen.drawRectangle(245, 10, 225, 121, color::red);
-    Brain.Screen.drawRectangle(10, 141, 225, 121, color::blue);
-    Brain.Screen.drawRectangle(245, 141, 225, 121, color::blue);
+    Brain.Screen.drawRectangle(10, 10, 140, 50, color::red);
+    Brain.Screen.drawRectangle(160, 10, 140, 50, color::red);
+    Brain.Screen.drawRectangle(310, 10, 140, 50, color::red);
     
-    Brain.Screen.printAt(100, 65, "Front");
-    Brain.Screen.printAt(325, 65, "Back");
-    Brain.Screen.printAt(100, 196, "Front");
-    Brain.Screen.printAt(325, 196, "Back");
+    Brain.Screen.drawRectangle(10, 80, 140, 50, color::blue);
+    Brain.Screen.drawRectangle(160, 80, 140, 50, color::blue);
+    Brain.Screen.drawRectangle(310, 80, 140, 50, color::blue);
+    
+    Brain.Screen.drawRectangle(160, 150, 140, 50, color::purple);
+    
+    Brain.Screen.printAt(80, 35, "Front Flag");
+    Brain.Screen.printAt(230, 35, "Front Plat");
+    Brain.Screen.printAt(380, 35, "Back");
+    
+    Brain.Screen.printAt(80, 105, "Front Flag");
+    Brain.Screen.printAt(230, 105, "Front Plat");
+    Brain.Screen.printAt(380, 105, "Back");
+    
+    Brain.Screen.printAt(230, 175, "Skills");
     
     while(true) {
         if(Brain.Screen.pressing()) {
             int xPos = Brain.Screen.xPosition();
             int yPos = Brain.Screen.yPosition();
             
-            if(yPos >= 10 && yPos <= 131) {
-                if(xPos >= 10 && xPos <= 235) {
+            if(yPos >= 10 && yPos <= 60) {
+                if(xPos >= 10 && xPos <= 150) {
                     return 1;
-                } else if(xPos >= 245 && xPos <= 470) {
+                }
+                else if(xPos >= 160 && xPos <= 300) {
                     return 2;
                 }
-            } else if(yPos >= 141 && yPos <= 262) {
-                if(xPos >= 10 && xPos <= 235) {
+                else if(xPos >= 310 && xPos <= 450){
                     return 3;
-                } else if(xPos >= 245 && xPos <= 470) {
+                }
+            }
+            else if(yPos >= 80 && yPos <= 130) {
+                if(xPos >= 10 && xPos <= 150) {
                     return 4;
+                }
+                else if(xPos >= 160 && xPos <= 300) {
+                    return 5;
+                }
+                else if(xPos >= 310 && xPos <= 450){
+                    return 6;
+                }
+            }
+            else if(yPos >= 150 && yPos <= 200){
+                if(xPos >= 160 && xPos <= 300){
+                    return 7;
                 }
             }
         }
@@ -124,7 +148,7 @@ void ProgrammingSkills( void ) {
 
 /*****BLUE INSIDE AUTON*****/
 
-void BlueInside( void ){
+void BlueInsidePlatform( void ){
     shoot(); //shoot high flag
     RollerMotor.spin(directionType::fwd,100,velocityUnits::pct); //turn on roller
     turn(150.0); //turn left to face cap w ball
@@ -135,21 +159,27 @@ void BlueInside( void ){
     driveFor(0.48, 100); //drive slowly forward to avoid hitting wall when turning
     task::sleep(300); //sleep for 0.3 seconds
     turn(-165.0); //turn right to face flags
+    driveFor(2.55, 100); //drive forwards to hit medium flag
+    shoot(); //shoot
     task::sleep(300); //sleep for 0.3 seconds
-    
-    //8 point auton with platform
-    /*driveFor(2.55, 100); //drive forwards to hit medium flag
-     shoot(); //shoot
-     task::sleep(300); //sleep for 0.3 seconds
-     RollerMotor.stop(); //stop roller motor
-     driveFor(-4.23, 100); //drive back to reach platform
-     task::sleep(300); //sleep for 0.3 seconds
-     turn(-152.0); //turn so that back is facing platform
-     driveFor(-5.0, 100); //drive into platform*/
-    
-    //6 point auton without platform
-    //driveSlowlyFor(0.5); //drive slowly initially
-    //turn(-20.0); //turn to face low flag
+    RollerMotor.stop(); //stop roller motor
+    driveFor(-4.23, 100); //drive back to reach platform
+    task::sleep(300); //sleep for 0.3 seconds
+    turn(-152.0); //turn so that back is facing platform
+    driveFor(-5.0, 100); //drive into platform
+}
+
+void BlueInsideLowFlag( void ){
+    shoot(); //shoot high flag
+    RollerMotor.spin(directionType::fwd,100,velocityUnits::pct); //turn on roller
+    turn(150.0); //turn left to face cap w ball
+    task::sleep(300); //stop for 0.3 seconds to avoid drifting
+    driveFor(3.0, 100); //drive for 3 tiles to get ball
+    driveFor(0.6, 40); //drive slowly to approach ball
+    driveFor(-4.5, 100); //drive back and hit wall to align bot
+    driveFor(0.48, 100); //drive slowly forward to avoid hitting wall when turning
+    task::sleep(300); //sleep for 0.3 seconds
+    turn(-165.0); //turn right to face flags
     task::sleep(300); //sleep for 0.3 seconds
     driveFor(2.4, 100); //drive forwards
     task::sleep(300); //sleep for 0.3 seconds
@@ -172,7 +202,30 @@ void Outside ( void ){
 
 /*****RED INSIDE AUTON*****/
 
-void RedInside( void ){
+void RedInsidePlatform( void ){
+    shoot(); //shoot high flag
+    RollerMotor.spin(directionType::fwd,100,velocityUnits::pct); //turn on roller
+    turn(-160.0); //turn left to face cap w ball
+    task::sleep(300); //stop for 0.3 seconds to avoid drifting
+    driveFor(3.0, 100); //drive for 3 tiles to get ball
+    driveFor(0.6, 40); //drive slowly to approach ball
+    driveFor(-4.5, 100); //drive back and hit wall to align bot
+    driveFor(0.41, 100); //drive slowly forward to avoid hitting wall when turning
+    task::sleep(300); //sleep for 0.3 seconds
+    turn(140.0); //turn right to face flags
+    driveFor(2.55, 100); //drive forwards to hit medium flag
+    shoot(); //shoot
+    task::sleep(300); //sleep for 0.3 seconds
+    RollerMotor.stop(); //stop roller motor
+    driveFor(-4.36, 100); //drive back to reach platform
+    task::sleep(300); //sleep for 0.3 seconds
+    turn(135.0); //turn so that back is facing platform
+    task::sleep(300);
+    driveFor(-5.0, 100); //drive into platform
+    
+}
+
+void RedInsideLowFlag( void ){
     shoot(); //shoot high flag
     RollerMotor.spin(directionType::fwd,100,velocityUnits::pct); //turn on roller
     turn(-160.0); //turn left to face cap w ball
@@ -184,19 +237,6 @@ void RedInside( void ){
     task::sleep(300); //sleep for 0.3 seconds
     turn(140.0); //turn right to face flags
     task::sleep(300); //sleep for 0.3 seconds
-    
-    //8 point auton with platform
-    /*driveFor(2.55, 100); //drive forwards to hit medium flag
-     shoot(); //shoot
-     task::sleep(300); //sleep for 0.3 seconds
-     RollerMotor.stop(); //stop roller motor
-     driveFor(-4.36, 100); //drive back to reach platform
-     task::sleep(300); //sleep for 0.3 seconds
-     turn(135.0); //turn so that back is facing platform
-     task::sleep(300);
-     driveFor(-5.0, 100); //drive into platform*/
-    
-    //6 point auton without platform
     driveFor(0.5, 40); //drive slowly initially
     turn(22.0); //turn to face low flag
     task::sleep(300); //sleep for 0.3 seconds
@@ -316,16 +356,25 @@ int main() {
     
     switch(selectAuton()) {
         case 1:
-            comp.autonomous( RedInside );
+            comp.autonomous( RedInsideLowFlag );
             break;
         case 2:
-            comp.autonomous( Outside );
+            comp.autonomous( RedInsidePlatform );
             break;
         case 3:
-            comp.autonomous( BlueInside );
+            comp.autonomous( Outside );
             break;
         case 4:
+            comp.autonomous( BlueInsideLowFlag );
+            break;
+        case 5:
+            comp.autonomous( BlueInsidePlatform );
+            break;
+        case 6:
             comp.autonomous( Outside );
+            break;
+        case 7:
+            comp.autonomous( ProgrammingSkills );
             break;
     }
     
