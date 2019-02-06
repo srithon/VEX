@@ -22,7 +22,7 @@ const float WHEEL_DIAMETER = 4.125;
 /*Auton Constants*/ 
 
 const bool RedInside = false;
-const bool BlueInside = false;
+const bool BlueInside = true;
 const bool Outside = false;
 const bool ProgrammingSkills = false;
 const bool DriverSkills = false;
@@ -124,11 +124,12 @@ void autonomous( void ) {
         driveFor(2.4, 100); //drive forwards 
         task::sleep(300); //sleep for 0.3 seconds
         RollerMotor.stop(); //stops roller
-        turn(20.0);
         shoot(); //shoot
         turn(-20.0);
         driveFor(1.6, 60); //drive slowly into low flag and align w wall
-        driveFor(2.0, 40); //drive backwards for medium flag
+        driveFor(-5.4, 60); //drive backwards for medium flag
+        turn(-153.0); //turn so that back is facing platform
+        driveFor(-6.0, 100); //drive into platform
     }
 
     if(Outside){
@@ -169,7 +170,6 @@ void autonomous( void ) {
         RollerMotor.stop(); //stops roller
         driveFor(1.6, 60); //drive slowly into low flag and align w wall
         driveFor(-2.0, 40); //drive backwards for medium flag
-        turn(-27.0); //turn to aim for medium flag
         shoot(); //shoot
         turn(22.0);      
     }
