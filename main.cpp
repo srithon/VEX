@@ -37,14 +37,14 @@ void pre_auton( void ) {
 /**************************************************
 *
 * Auton methods
-* driveFor();
-* turn();
-* shoot();
+* driveFor(float tiles, int speed);
+* turn(float degrees);
+* shoot(void);
 *
 **************************************************/
 
 
-void driveFor( float tiles , int speed){
+void driveFor(float tiles, int speed){
     const float TILE_LENGTH = 12.5;
     float length = tiles * TILE_LENGTH;
     float circum =  3.141592653589 * WHEEL_DIAMETER;
@@ -58,7 +58,7 @@ void driveFor( float tiles , int speed){
 }
 
 
-void turn( float degrees ){
+void turn(float degrees){
     const float TURNING_DIAMETER = 17.5;
     float turningRatio = TURNING_DIAMETER / WHEEL_DIAMETER;
     int turnSpeed = 60;
@@ -70,7 +70,7 @@ void turn( float degrees ){
 }
 
 
-void shoot( void ){
+void shoot(void){
     LauncherMotor.rotateFor(1.4, timeUnits::sec, 100, velocityUnits::pct);
 }
 
@@ -89,7 +89,7 @@ void rumbleTimer(void) {
 
 /**************************************************/
 
-void autonomous( void ) {
+void autonomous(void) {
 
     //Positive = counter-clockwise
     //Negative = clockwise
@@ -181,7 +181,7 @@ void autonomous( void ) {
 }
 
 
-void usercontrol( void ) {
+void usercontrol(void) {
 
     double driveSpeedMultiplier = 1.00;
 
@@ -253,8 +253,8 @@ int main() {
 
     pre_auton();
 
-    comp.autonomous( autonomous );
-    comp.drivercontrol( usercontrol );
+    comp.autonomous(autonomous);
+    comp.drivercontrol(usercontrol);
 
     while(1) {
       task::sleep(100);
