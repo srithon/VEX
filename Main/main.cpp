@@ -1,93 +1,160 @@
-/**************************************************
- *
- *
- * Team: 750E
- * Game: Turning Point
- * Main File
- *
- *
- ***************************************************/
-
-
 #include "robot-config.h"
+#include <math.h>
+#include <string>
+void auton(void);
+void driver(void);
+void pre_auton(void);
+int getNumDirectionButtonsPressed(void);
+bool checkOnlyDirectionButtonPressed(void);
+void setUserControlBinds(void);
+void moveBot(double, bool);
+void moveBot(double, double, bool);
+void turnBot(double, double);
+void resetRotations(void);
+void drawShooter();
+void releaseShooter();
+int selectAuton();
+enum COLOR
+{
+	RED, BLUE
+};
 
-//using namespace for cleaner code
-using namespace vex;
+enum SIDE
+{
+	FRONT, BACK
+};
 
-//constant for wheel diameter
-const float WHEEL_DIAMETER = 4.125;
+/*********CONFIGURE************/
 
-void pre_auton( void ) {
+	COLOR col = COLOR::RED;
+	SIDE side = SIDE::FRONT;
+	
+/*********CONFIGURE************/
 
+int main(void)
+{
+	pre_auton();
+	comp.autonomous(auton);
+	comp.drivercontrol(driver);
 }
 
-
-/**************************************************
- *
- * Auton methods
- * driveFor();
- * turn();
- * shoot();
- *
- **************************************************/
-
-void driveFor( float tiles , int speed ){
-    const float TILE_LENGTH = 12.5;
-    float length = tiles * TILE_LENGTH;
-    float circum =  3.141592653589 * WHEEL_DIAMETER;
-    float rotations = length / circum;
-    float degrees = 360 * rotations;
-
-    RightMotorFront.startRotateFor(degrees, rotationUnits::deg, speed, velocityUnits::pct);
-    LeftMotorFront.startRotateFor(degrees, rotationUnits::deg, speed, velocityUnits::pct);
-    RightMotorBack.startRotateFor(degrees, rotationUnits::deg, speed, velocityUnits::pct);
-    LeftMotorBack.rotateFor(degrees, rotationUnits::deg, speed, velocityUnits::pct);
+void resetRotations(void)
+{
+    leftMotorF.resetRotation();
+    leftMotorB.resetRotation();
+    rightMotorB.resetRotation();
+    rightMotorF.resetRotation();
 }
 
-
-void turn( float degrees ){
-    const float TURNING_DIAMETER = 17.5;
-    float turningRatio = TURNING_DIAMETER / WHEEL_DIAMETER;
-    int turnSpeed = 60;
-
-    RightMotorFront.startRotateFor(degrees * turningRatio / 2, rotationUnits::deg, turnSpeed, velocityUnits::pct);
-    LeftMotorFront.startRotateFor(-degrees * turningRatio / 2, rotationUnits::deg, turnSpeed, velocityUnits::pct);
-    RightMotorBack.startRotateFor(degrees * turningRatio / 2, rotationUnits::deg, turnSpeed, velocityUnits::pct);
-    LeftMotorBack.rotateFor(-degrees * turningRatio / 2, rotationUnits::deg, turnSpeed, velocityUnits::pct);
+void turnBot(double deg, double speed)
+{
+    resetRotations();
+    
+   /* if(deg > 0)
+	{
+        deg += 25;
+    }
+    else
+	{
+        speed *= -1;
+        deg -= 25;
+    }*/
+	
+    double rad = 7.63;
+    double arcLength = (2.0*rad*M_PI)*(deg/360.0);
+    double rot = 360.0*(arcLength/(4.0*M_PI));
+    leftMotorB.startRotateTo(rot,vex::rotationUnits::deg,speed,vex::velocityUnits::pct);
+    leftMotorF.startRotateTo(rot,vex::rotationUnits::deg,speed,vex::velocityUnits::pct);
+    rightMotorB.startRotateTo(-1*rot,vex::rotationUnits::deg,-1*speed,vex::velocityUnits::pct);
+    rightMotorF.rotateTo(-1*rot,vex::rotationUnits::deg,-1*speed,vex::velocityUnits::pct);
 }
 
-
-void shoot( void ){
-    LauncherMotor.rotateFor(1.4, timeUnits::sec, 100, velocityUnits::pct);
+void moveBot(double distance, bool direction)
+{
+    resetRotations();
+    
+    double radius = 2;
+    double n = -1.0;
+    if (direction)
+	{
+        n *= -1.0;
+    }
+    
+    double deg = n*360 * (distance / (2*radius*M_PI));
+    
+    leftMotorF.startRotateTo(deg, vex::rotationUnits::deg, n * 90, vex::velocityUnits::rpm);
+    leftMotorB.startRotateTo(deg, vex::rotationUnits::deg, n * 90, vex::velocityUnits::rpm);
+    rightMotorF.startRotateTo(deg, vex::rotationUnits::deg, n * 90, vex::velocityUnits::rpm);   
+    rightMotorB.rotateTo(deg, vex::rotationUnits::deg, n * 90, vex::velocityUnits::rpm);
 }
 
-/*****AUTON SELECTOR*****/
+void moveBot(double distance, double speed, bool direction)
+{
+    resetRotations();
+    
+    double radius = 2;
+    double n = -1.0;
+    if (direction)
+	{
+        n *= -1.0;
+    }
+    
+    double deg = n*360 * (distance / (2*radius*M_PI));
+    
+    leftMotorF.startRotateTo(deg, vex::rotationUnits::deg, speed, vex::velocityUnits::pct);
+    leftMotorB.startRotateTo(deg, vex::rotationUnits::deg, speed, vex::velocityUnits::pct);
+    rightMotorF.startRotateTo(deg, vex::rotationUnits::deg, speed, vex::velocityUnits::pct);   
+    rightMotorB.rotateTo(deg, vex::rotationUnits::deg, speed, vex::velocityUnits::pct);
+}
 
+inline void pre_auton(void)
+{
+    int pos = selectAuton();
+    Brain.Screen.clearScreen();
+    Brain.Screen.print("750Z");
+    Brain.Screen.newLine();
+    if(pos == 1){
+        col = COLOR::RED;
+        side = SIDE::FRONT;
+    }
+    else if(pos == 3){
+        col = COLOR::RED;
+        side = SIDE::BACK;
+    }
+    else if(pos == 4){
+        col = COLOR::BLUE;
+        side = SIDE::FRONT;
+    }
+    else if(pos == 6){
+        col = COLOR::BLUE;
+        side = SIDE::BACK;
+    }
+}
 int selectAuton() {
     Brain.Screen.clearScreen();
 
-    Brain.Screen.drawRectangle(10, 10, 140, 50, color::red);
-    Brain.Screen.drawRectangle(160, 10, 140, 50, color::red);
-    Brain.Screen.drawRectangle(310, 10, 140, 50, color::red);
+    Brain.Screen.drawRectangle(10, 80, 140, 50, color::red);
+    Brain.Screen.drawRectangle(160, 80, 140, 50, color::red);
+    Brain.Screen.drawRectangle(310, 80, 140, 50, color::red);
 
-    Brain.Screen.drawRectangle(10, 80, 140, 50, color::blue);
-    Brain.Screen.drawRectangle(160, 80, 140, 50, color::blue);
-    Brain.Screen.drawRectangle(310, 80, 140, 50, color::blue);
-
-    Brain.Screen.printAt(31, 35, "Front Flag");
-    Brain.Screen.printAt(183, 35, "Front Plat");
-    Brain.Screen.printAt(360, 35, "Back");
+    Brain.Screen.drawRectangle(10, 150, 140, 50, color::blue);
+    Brain.Screen.drawRectangle(160, 150, 140, 50, color::blue);
+    Brain.Screen.drawRectangle(310, 150, 140, 50, color::blue);
 
     Brain.Screen.printAt(31, 105, "Front Flag");
-    Brain.Screen.printAt(185, 105, "Front Plat");
+    Brain.Screen.printAt(183, 105, "Front Plat");
     Brain.Screen.printAt(360, 105, "Back");
+
+    Brain.Screen.printAt(31, 175, "Front Flag");
+    Brain.Screen.printAt(185, 175, "Front Plat");
+    Brain.Screen.printAt(360, 175, "Back");
 
     while(true) {
         if(Brain.Screen.pressing()) {
             int xPos = Brain.Screen.xPosition();
             int yPos = Brain.Screen.yPosition();
 
-            if(yPos >= 10 && yPos <= 60) {
+            if(yPos >= 80 && yPos <= 130) {
                 if(xPos >= 10 && xPos <= 150) {
                     return 1;
                 }
@@ -98,7 +165,7 @@ int selectAuton() {
                     return 3;
                 }
             }
-            else if(yPos >= 80 && yPos <= 130) {
+            else if(yPos >= 150 && yPos <= 200) {
                 if(xPos >= 10 && xPos <= 150) {
                     return 4;
                 }
@@ -112,117 +179,7 @@ int selectAuton() {
         }
     }
 }
-
-/*****BLUE INSIDE AUTON*****/
-
-void BlueInsidePlatform( void ){
-    shoot(); //shoot high flag
-    RollerMotor.spin(directionType::fwd,100,velocityUnits::pct); //turn on roller
-    turn(160.0); //turn left to face cap w ball
-    task::sleep(300); //stop for 0.3 seconds to avoid drifting
-    driveFor(3.0, 100); //drive for 3 tiles to get ball
-    driveFor(0.6, 40); //drive slowly to approach ball
-    driveFor(-4.5, 100); //drive back and hit wall to align bot
-    driveFor(0.48, 100); //drive slowly forward to avoid hitting wall when turning
-    task::sleep(300); //sleep for 0.3 seconds
-    turn(-170.0); //turn right to face flags
-    task::sleep(300); //sleep for 0.3 seconds
-    driveFor(2.4, 100); //drive forwards
-    task::sleep(300); //sleep for 0.3 seconds
-    RollerMotor.stop(); //stops roller
-    shoot(); //shoot
-    turn(-20.0);
-    driveFor(1.6, 60); //drive slowly into low flag and align w wall
-    driveFor(-5.4, 90); //drive backwards for platform
-    turn(-153.0); //turn so that back is facing platform
-    driveFor(-6.0, 100); //drive into platform
-}
-
-void BlueInsideLowFlag( void ){
-    shoot(); //shoot high flag
-    RollerMotor.spin(directionType::fwd,100,velocityUnits::pct); //turn on roller
-    turn(150.0); //turn left to face cap w ball
-    task::sleep(300); //stop for 0.3 seconds to avoid drifting
-    driveFor(3.0, 100); //drive for 3 tiles to get ball
-    driveFor(0.6, 40); //drive slowly to approach ball
-    driveFor(-4.5, 100); //drive back and hit wall to align bot
-    driveFor(0.48, 100); //drive slowly forward to avoid hitting wall when turning
-    task::sleep(300); //sleep for 0.3 seconds
-    turn(-165.0); //turn right to face flags
-    task::sleep(300); //sleep for 0.3 seconds
-    driveFor(2.4, 100); //drive forwards
-    task::sleep(300); //sleep for 0.3 seconds
-    RollerMotor.stop(); //stops roller
-    shoot(); //shoot
-    turn(-20.0);
-    driveFor(1.6, 60); //drive slowly into low flag and align w wall
-    driveFor(2.0, 40); //drive backwards for medium flag
-}
-
-
-/*****OUTSIDE AUTON*****/
-
-void Outside ( void ){
-    RollerMotor.spin(directionType::rev,100,velocityUnits::pct);
-    driveFor(3.6, 40);
-}
-
-
-/*****RED INSIDE AUTON*****/
-
-void RedInsidePlatform( void ){
-    shoot(); //shoot high flag
-    RollerMotor.spin(directionType::fwd,100,velocityUnits::pct); //turn on roller
-    turn(-160.0); //turn left to face cap w ball
-    task::sleep(300); //stop for 0.3 seconds to avoid drifting
-    driveFor(3.0, 100); //drive for 3 tiles to get ball
-    driveFor(0.6, 40); //drive slowly to approach ball
-    driveFor(-4.5, 100); //drive back and hit wall to align bot
-    driveFor(0.41, 100); //drive slowly forward to avoid hitting wall when turning
-    task::sleep(300); //sleep for 0.3 seconds
-    turn(140.0); //turn right to face flags
-    driveFor(2.55, 100); //drive forwards to hit medium flag
-    shoot(); //shoot
-    task::sleep(300); //sleep for 0.3 seconds
-    RollerMotor.stop(); //stop roller motor
-    driveFor(-4.36, 100); //drive back to reach platform
-    task::sleep(300); //sleep for 0.3 seconds
-    turn(135.0); //turn so that back is facing platform
-    task::sleep(300);
-    driveFor(-5.0, 100); //drive into platform
-
-}
-
-void RedInsideLowFlag( void ){
-    shoot(); //shoot high flag
-    RollerMotor.spin(directionType::fwd,100,velocityUnits::pct); //turn on roller
-    turn(-160.0); //turn left to face cap w ball
-    task::sleep(300); //stop for 0.3 seconds to avoid drifting
-    driveFor(3.0, 100); //drive for 3 tiles to get ball
-    driveFor(0.6, 40); //drive slowly to approach ball
-    driveFor(-4.5, 100); //drive back and hit wall to align bot
-    driveFor(0.41, 100); //drive slowly forward to avoid hitting wall when turning
-    task::sleep(300); //sleep for 0.3 seconds
-    turn(140.0); //turn right to face flags
-    task::sleep(300); //sleep for 0.3 seconds
-    driveFor(0.5, 40); //drive slowly initially
-    turn(22.0); //turn to face low flag
-    task::sleep(300); //sleep for 0.3 seconds
-    driveFor(2.7, 100); //drive forwards
-    task::sleep(300); //sleep for 0.3 seconds
-    RollerMotor.stop(); //stops roller
-    driveFor(1.6, 60); //drive slowly into low flag and align w wall
-    driveFor(-2.0, 40); //drive backwards for medium flag
-    turn(-27.0); //turn to aim for medium flag
-    shoot(); //shoot
-    turn(22.0);
-}
-
-/*************************************************
- * Controller Binds
-*/
-
-int getNumDirectionButtonsPressed()
+int getNumDirectionButtonsPressed(void)
 {
 	int n = 0;
 	
@@ -249,53 +206,50 @@ int getNumDirectionButtonsPressed()
 	return n;
 }
 
-bool checkOnlyDirectionButtonPressed()
+inline bool checkOnlyDirectionButtonPressed(void)
 { //returns true if only one direction button is pressed
 	return (getNumDirectionButtonsPressed() == 1);
 }
 
 // sets controller binds for user control
+
 void setUserControlBinds(void)
 {
 	/* RIGHT BUMPERS */
 	LAUNCH_BUTTON->pressed([] ()
 	{ // these are called anonymous functions
-		LauncherMotor.spin(directionType::fwd, 100, velocityUnits::pct);
+		launcherMotor.spin(directionType::fwd, 100, velocityUnits::pct);
 	});
 	LAUNCH_BUTTON->released([] ()
 	{
-		LauncherMotor.stop();
+		launcherMotor.stop();
 	});
 	
 	/* LEFT BUMPERS	*/
 	INTAKE_IN->pressed([] ()
 	{
-		if (!INTAKE_OUT->pressing())
-		{ //if ButtonL2 is pressed, don't do anything
-			RollerMotor.spin(directionType::rev, 100, velocityUnits::pct);
-		}
+		rollerMotor.spin(directionType::fwd, 100, velocityUnits::pct);
+        
+        if (!INTAKE_OUT->pressing())
+            rollerMotor2.spin(directionType::rev, 100, velocityUnits::pct);
 	});
 	INTAKE_IN->released([] ()
 	{
+        rollerMotor.stop();
+        
 		if (!INTAKE_OUT->pressing())
-		{ //if ButtonL2 is pressed, don't do anything
-			RollerMotor.stop();
+		{
+            rollerMotor2.stop();
 		}
 	});
 	
 	INTAKE_OUT->pressed([] ()
 	{
-		if (!INTAKE_IN->pressing())
-		{ //if ButtonL1 is pressed, don't do anything
-			RollerMotor.spin(directionType::fwd, 100, velocityUnits::pct);
-		}
+		rollerMotor2.spin(directionType::fwd, 60, velocityUnits::pct);
 	});
 	INTAKE_OUT->released([] ()
 	{
-		if (!INTAKE_IN->pressing())
-		{ //if ButtonL1 is pressed, don't do anything
-			RollerMotor.stop();
-		}
+		rollerMotor2.stop();
 	});
 	
 	/*	DIRECTION BUTTONS	*/
@@ -308,84 +262,90 @@ void setUserControlBinds(void)
 		 
 		if (checkOnlyDirectionButtonPressed())
 		{
-			RightMotorFront.spin(directionType::fwd, 7, velocityUnits::pct);
-            LeftMotorFront.spin(directionType::rev, 7, velocityUnits::pct);
-            RightMotorBack.spin(directionType::fwd, 7, velocityUnits::pct);
-            LeftMotorBack.spin(directionType::rev, 7, velocityUnits::pct);
+			rightMotorF.spin(directionType::fwd, 7, velocityUnits::pct);
+            leftMotorF.spin(directionType::rev, 7, velocityUnits::pct);
+            rightMotorB.spin(directionType::fwd, 7, velocityUnits::pct);
+            leftMotorB.spin(directionType::rev, 7, velocityUnits::pct);
 		}
 	});
 	SLOW_RIGHT->pressed([] ()
 	{
 		if (checkOnlyDirectionButtonPressed())
 		{
-			RightMotorFront.spin(directionType::rev, 7, velocityUnits::pct);
-            LeftMotorFront.spin(directionType::fwd, 7, velocityUnits::pct);
-            RightMotorBack.spin(directionType::rev, 7, velocityUnits::pct);
-            LeftMotorBack.spin(directionType::fwd, 7, velocityUnits::pct);
+			rightMotorF.spin(directionType::rev, 7, velocityUnits::pct);
+            leftMotorF.spin(directionType::fwd, 7, velocityUnits::pct);
+            rightMotorB.spin(directionType::rev, 7, velocityUnits::pct);
+            leftMotorB.spin(directionType::fwd, 7, velocityUnits::pct);
 		}
 	});
 	SLOW_UP->pressed([] ()
 	{
 		if (checkOnlyDirectionButtonPressed())
 		{
-			RightMotorFront.spin(directionType::fwd, 35, velocityUnits::pct);
-            LeftMotorFront.spin(directionType::fwd, 35, velocityUnits::pct);
-            RightMotorBack.spin(directionType::fwd, 35, velocityUnits::pct);
-            LeftMotorBack.spin(directionType::fwd, 35, velocityUnits::pct);
+			rightMotorF.spin(directionType::fwd, 35, velocityUnits::pct);
+            leftMotorF.spin(directionType::fwd, 35, velocityUnits::pct);
+            rightMotorB.spin(directionType::fwd, 35, velocityUnits::pct);
+            leftMotorB.spin(directionType::fwd, 35, velocityUnits::pct);
 		}
 	});
 }
 
-/*****OPERATOR CONTROL*****/
-
-void usercontrol( void )
+void driver(void)
 {
 	setUserControlBinds();
 
     while (1)
 	{
-		RightMotorFront.spin(directionType::fwd, (VERTICAL_AXIS->value() - HORIZONTAL_AXIS->value()), velocityUnits::pct);
-		LeftMotorFront.spin(directionType::fwd, (VERTICAL_AXIS->value() + HORIZONTAL_AXIS->value()), velocityUnits::pct);
-		RightMotorBack.spin(directionType::fwd, (VERTICAL_AXIS->value() - HORIZONTAL_AXIS->value()), velocityUnits::pct);
-		LeftMotorBack.spin(directionType::fwd, (VERTICAL_AXIS->value() + HORIZONTAL_AXIS->value()), velocityUnits::pct);
+		rightMotorF.spin(directionType::fwd, (VERTICAL_AXIS->value() - HORIZONTAL_AXIS->value()), velocityUnits::pct);
+		leftMotorF.spin(directionType::fwd, (VERTICAL_AXIS->value() + HORIZONTAL_AXIS->value()), velocityUnits::pct);
+		rightMotorB.spin(directionType::fwd, (VERTICAL_AXIS->value() - HORIZONTAL_AXIS->value()), velocityUnits::pct);
+		leftMotorB.spin(directionType::fwd, (VERTICAL_AXIS->value() + HORIZONTAL_AXIS->value()), velocityUnits::pct);
 		
         task::sleep(20);
     }
 }
-
-
-/*****MAIN METHOD*****/
-
-int main() {
-
-    pre_auton();
-
-    switch(selectAuton()) {
-        case 1:
-            comp.autonomous( RedInsideLowFlag );
-            break;
-        case 2:
-            comp.autonomous( RedInsidePlatform );
-            break;
-        case 3:
-            comp.autonomous( Outside );
-            break;
-        case 4:
-            comp.autonomous( BlueInsideLowFlag );
-            break;
-        case 5:
-            comp.autonomous( BlueInsidePlatform );
-            break;
-        case 6:
-            comp.autonomous( Outside );
-            break;
-    }
-
-    Brain.Screen.clearScreen();
-
-    comp.drivercontrol( usercontrol );
-
-    while(1) {
-        task::sleep(100);
-    }
+void drawShooter(){
+    launcherMotor.rotateTo(1500,vex::rotationUnits::deg,100,velocityUnits::pct);
+}
+void releaseShooter(){
+  //  launcherMotor.spin(directionT)
+}
+void auton(void)
+{
+	int n = -1;
+	
+	if (col == COLOR::BLUE)
+	{
+		n *= -1;
+	}
+	
+	if (side == SIDE::FRONT)
+	{
+		//front code
+       // moveBot(24.0,5);
+       // turnBot(90.0,5);
+        moveBot(2.66, 20, true);
+        turnBot(n*90.0,12.5);
+        drawShooter();
+        /*
+        moveBot(40,50, true);
+        moveBot(8, 20, true);
+        moveBot(40, 50, false);
+        moveBot(8, 20, false);
+        turnBot(-n*90.0,25);
+        rollerMotor2.spin(directionType::rev, 70.0, velocityUnits::pct);
+        moveBot(42, 50, true);
+        moveBot(12, 30, false);
+        turnBot(-n*90.0, 25);
+        moveBot(14.0, 70, true);
+        rollerMotor2.stop(brakeType::brake);*/
+        
+       // drawShooter();
+	}
+	else
+	{
+        Brain.Screen.print("750ZZ");
+		rollerMotor2.spin(directionType::rev, 70.0, velocityUnits::pct);
+    
+	}
 }
